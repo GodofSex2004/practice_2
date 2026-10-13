@@ -28,6 +28,28 @@ RESET: str = '\033[0m'
 DEFAULT_MAX_LINES: int = 10
 
 
+def _positive_count(value: str) -> int:
+    """Преобразует значение ``-k/--count`` в положительное целое.
+
+    Args:
+        value: строка из командной строки.
+
+    Returns:
+        Положительное число вхождений.
+
+    Raises:
+        argparse.ArgumentTypeError: если значение не является целым
+            числом или неположительно.
+    """
+    try:
+        number = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f'ожидается целое число, получено {value!r}')
+    if number <= 0:
+        raise argparse.ArgumentTypeError('количество вхождений должно быть положительным целым числом')
+    return number
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Создаёт аргументы командной строки утилиты.
 
@@ -47,9 +69,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument('-m', '--method', choices=('first', 'last'), default='first',
                         help="направление поиска: 'first' — с начала, "
                              "'last' — с конца (по умолчанию first)")
-    parser.add_argument('-k', '--count', type=int, default=None,
+    parser.add_argument('-k', '--count', type=_positive_count, default=None,
                         help='количество первых вхождений k '
-                             '(по умолчанию без ограничения)')
+                             '(должно быть положительным, по умолчанию без ограничения)')
     parser.add_argument('--max-lines', type=int, default=DEFAULT_MAX_LINES,
                         help=f'максимум выводимых строк текста (по умолчанию {DEFAULT_MAX_LINES})')
     parser.add_argument('--no-color', action='store_true',

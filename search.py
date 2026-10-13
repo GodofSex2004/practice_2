@@ -198,9 +198,12 @@ def search(string: str,
 
     Raises:
         ValueError: если ``method`` не равен ``'first'`` или ``'last'``.
+        ValueError: если ``count`` задан и не является положительным целым.
     """
     if method not in ('first', 'last'):
         raise ValueError(f"Недопустимый метод поиска: {method!r}, ожидается 'first' или 'last'")
+    if count is not None and count <= 0:
+        raise ValueError(f'Недопустимое количество вхождений: {count!r}, ожидается положительное целое')
 
     if not string:
         return None
